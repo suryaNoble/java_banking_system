@@ -1,824 +1,359 @@
-
 // import React, { useState, useEffect } from 'react';
-// import { useBankingSystem } from "../Context/UserContext.jsx"
-// import axios from "../Utills/AxiosWithJWT.js"
-// import { toast } from 'react-hot-toast';
-// import { useNavigate, NavLink } from "react-router-dom"
-// import NavbarDashboard from '../Dashboard/NavbarDashboard.jsx';
-// import Avatar from '../Avatar/Avatar.jsx';
+// import { toast } from "react-hot-toast";
+// import Navbar from '../LandingPage/Navbar';
+// import AvatarCard from './AvatarCard';
 
 // const Profile = () => {
 
-//   // const token = sessionStorage.getItem("jwtToken");
-//   // axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+//   const [editMode, setEditMode] = useState(false);
 
-//   //contextAPI
-//   // const { BASE_URL, setUser: setUserDetails, userDetails, gettingAUser } = useBankingSystem();
-//   // const [image, setImage] = useState(null);
-//   // const [imagePreviewUrl, setImagePreviewUrl] = useState('');
-//   const [existedUser, setExistedUser] = useState({
-//     userId: "",
-//     firstname: "",
-//     lastname: "",
+//   const [user, setUser] = useState({
+//     name: "",
 //     email: "",
-//     userdetails: {
-//       userdetailsid: "",
-//       address: "",
-//       city: "",
-//       state: "",
-//       pin: "",
-//       adhaar: "",
-//       pan: "",
-//       gender: "",
-//       mobile: "",
-//       dateOfBirth: ""
-
-//     }
+//     phoneNumber: "",
+//     accountType: ""
 //   });
 
 
-
-//   const navigateTo = useNavigate();
-
-//   // useEffect(()=>{
-//   //   if(!sessionStorage.getItem("jwtToken")){
-//   //     navigateTo("/")
-//   //   }
-//   // },[])
-
-  // useEffect(() => {
-  // setExistedUser(userDetails)
-  // }, [userDetails])
+//        const accountNumber = 323456789;
 
 
+//   useEffect(() => {
+//     const fetchAccountDetails = async () => {
+//       try {
+//         const response = await fetch(`http://localhost:8080/accounts/${accountNumber}`);
 
-//   // const handleImageChange = (e) => {
-//   //   e.preventDefault();
-//   //   let reader = new FileReader();
-//   //   let file = e.target.files[0];
-
-//   //   reader.onloadend = () => {
-//   //     setImage(file)
-//   //     setImagePreviewUrl(reader.result);
-//   //   }
-
-//   //   reader.readAsDataURL(file)
-//   // }
-
-
-//   let user, uservalue;
-//   const handleAlreadyExistedDetails = (ele) => {
-//     const fieldsLevel1 = ['userId',
-//       'firstname',
-//       'lastname',
-//       'email'];
-//     user = ele.target.name;
-//     uservalue = ele.target.value;
-//     console.log("+++++ ", user);
-//     if (fieldsLevel1.indexOf(user?.trim()) < 0) {
-//       let modifiedUser = {
-//         ...existedUser,
-//         userdetails: {
-//           ...existedUser?.userdetails,
-//           [user]: uservalue,
+//         if (!response.ok) {
+//           toast.error("Failed to fetch profile");
+//           return;
 //         }
-//       };
-//       console.log("Modified User: ", modifiedUser);
-//       setExistedUser(modifiedUser);
-//     } else {
-//       let modifiedUser = { ...existedUser, [user]: uservalue };
-//       console.log("Modified User 2: ", modifiedUser);
-//       setExistedUser(modifiedUser);
-//     }
 
+//         const data = await response.json();
+//         console.log("Fetched profile:", data);
+//          console.log("Fetched profile lo user:", data.user);
 
+//         setUser({
+//           name: data.user.name,
+//           email: data.user.email,
+//           phoneNumber: data.user.phone,
+//           accountType: data.accountType
+//         });
+
+//       } catch (error) {
+//         toast.error("Server error");
+//         console.error(error);
+//       }
+//     };
+
+//     fetchAccountDetails();
+//   }, [accountNumber]);
+
+//   const handleChange = (e) => {
+//     setUser({ ...user, [e.target.name]: e.target.value });
 //   };
 
+//   const handleEditToggle = () => {
+//     setEditMode(true);
+//   };
 
-//     useEffect(()=>{
-      
-//       },[existedUser])
-
-//   const handleCreateProfile = async (event) => {
-//     event.preventDefault();
-//     console.log("create profile initiated", existedUser);
-    
-      
-
-//     const { userdetails } = existedUser;
-
-//     console.log("adhaar length ",userdetails?.adhaar?.length);
-//     console.log("pan length ",userdetails?.pan?.length);
-//     console.log("mobile length ",userdetails?.mobile?.length);
-    
-//     const data = {
-//       address: userdetails?.address,
-//       city: userdetails?.city,
-//       state: userdetails?.state,
-//       pin: userdetails?.pin,
-//       adhaar: userdetails?.adhaar,
-//       pan: userdetails?.pan,
-//       gender: userdetails?.gender,
-//       mobile: userdetails?.mobile,
-//       dateOfBirth: userdetails?.dateOfBirth
-//     }
-
-
-//     if (!userdetails?.adhaar || !userdetails?.pan || !userdetails?.mobile || !userdetails?.gender ) {
-//       //alert("Please fill all fields");
-//       toast.error("Please fill all mandatory fields");
-//       return;
-//     };
-
-    
-
-
-//     if (userdetails?.adhaar?.length !== 12) {
-//       toast.error("Aadhar must be of 12 numbers!");
+//   const handleSave = () => {
+//     if (!user.name || !user.email || !user.phoneNumber) {
+//       toast.error("All fields required");
 //       return;
 //     }
 
-//     if (userdetails?.pan?.length !== 10) {
-//       toast.error("PAN must be of 10 numbers!");
+//     if (user.phoneNumber.length !== 10) {
+//       toast.error("Enter valid 10 digit number");
 //       return;
 //     }
 
-//     if (userdetails?.mobile?.length !== 10) {
-//       toast.error("Mobile number must be of 10 numbers!");
-//       return;
-//     }
+//     toast.success("Profile Updated");
+//     setEditMode(false);
+//   };
 
-//     const profileResp = await axios.put(`${BASE_URL}/api/v1/user/updateprofile/${existedUser.userId}`, data);
-
-//     setUserDetails(profileResp.data.user);
-
-//     console.log(profileResp);
-
-//     if (profileResp.status === 200) {
-//       toast.success("Profile Successfully Created,Please Relogin and Request for Account opening!");
-//       sessionStorage.clear();
-//       navigateTo("/login")
-
-//     } else {
-//       toast.error("Error in creating Profile!");
-//     }
-//   }
-
-//   useEffect(()=>{
-      
-//   },[existedUser])
+//   return (
+//     <div>
+//       <Navbar/>
+//     <div className="p-6 mt-5 mb-4 max-w-xl mx-auto bg-white rounded-xl shadow-xl pt-8 relative">
 
 
-//   const handleUpdateProfile = async (event) => {
-//     event.preventDefault();
-//     console.log("update profile initiated", existedUser);
+//       <h1 className="text-2xl font-semibold mb-6 text-center">Profile</h1>
 
-//     const { userdetails } = existedUser;
-
-//     console.log("adhaar length ",typeof(userdetails?.adhaar));
-    
-//     console.log("pan length ",userdetails?.pan?.length);
-//     console.log("pan length ",typeof(userdetails?.pan));
-//     console.log("mobile length ",userdetails?.mobile?.length);
-
-//     const data = {
-//       userdetailsid: userdetails?.userdetailsid,
-//       address: userdetails?.address,
-//       city: userdetails?.city,
-//       state: userdetails?.state,
-//       pin: userdetails?.pin,
-//       adhaar: userdetails?.adhaar,
-//       pan: userdetails?.pan,
-//       gender: userdetails?.gender,
-//       mobile: userdetails?.mobile,
-//       dateOfBirth: userdetails?.dateOfBirth
-//     }
+// <AvatarCard name={user.name} email={user.email} />
 
 
-//     if (!userdetails?.adhaar || !userdetails?.pan || !userdetails?.mobile) {
-//       //alert("Please fill all fields");
-//       toast.error("Please fill all mandatory fields");
-//       return;
-//     };
+//       <div className="flex flex-col space-y-4">
 
-//     if (userdetails?.adhaar?.length !== 12) {
-//       toast.error("Aadhar must be of 12 numbers!");
-//       return;
-//     }
-
-//     if (userdetails?.pan?.length !== 10) {
-//       toast.error("PAN must be of 10 numbers!");
-//       return;
-//     }
-
-//     if (userdetails?.mobile?.length !== 10) {
-//       toast.error("Mobile number must be of 10 numbers!");
-//       return;
-//     }
-
-
-
-//     // const profileResp = await axios.put(`${BASE_URL}/api/v1/user/updateprofile/${existedUser.userId}`, data);
-
-//     // setUserDetails(profileResp.data.user);
-
-//     // console.log(profileResp);
-
-//     // if (profileResp.status === 200) {
-//     //   toast.success("Profile Successfully Updated,Please Relogin and Request for Account opening!");
-//     //   sessionStorage.clear();
-//     //   navigateTo("/login")
-
-//     // } else {
-//     //   toast.error("Error in creating Profile!");
-//     // }
-
-
-
-//   }
-
-//   const handleSignOut = ()=>{
-//     sessionStorage.clear();
-//     navigateTo("/login");
-//     toast.success("SignOut Successfull!");
-// }
-
-
-
-
-
-//   if (!existedUser?.userdetails?.userdetailsid) {
-
-//     return (
-//         <> 
-          
-
-
-//           <nav className='navbar  flex flex-row justify-between mx-auto items-center h-[20vh] bg-gray-300 mx-auto px-[7rem]'>
-//         <div><h1 className='text-[1rem] font-semibold'>This Is Profile Section</h1></div>
-//               <div className='flex flex-row items-center justify-center space-x-4'>
-
-//                 <button className=' hover:bg-slate-600 hover:text-[#f1f2f6] bg-[#f1f2f6] py-[1rem] px-[2.5rem] rounded-lg text-xl duration-[0.5s]transition-all font-semibold' onClick={handleSignOut}>Sign Out</button>
-              
-//             <NavLink to={"/change-password"} className="abc hover:bg-slate-600 hover:text-[#f1f2f6] bg-[#f1f2f6] py-[1rem] px-[2.5rem] rounded-lg text-xl duration-[0.5s]transition-all font-semibold">Change Password</NavLink >
-        
-//         </div>
-//     </nav>
-
-//       <Avatar/>
-//       <form onSubmit={handleCreateProfile} className="bg-white p-6 rounded-lg flex flex-col">
-//         <div className="flex flex-wrap -mx-3 mb-6">
-//           <div className="w-full px-3">
-//             <label className="block font-medium text-lg mb-2" htmlFor="firstName">
-//               First Name:
-//             </label>
+//         <label className="font-medium">
+//           Name:
+//           {editMode ? (
 //             <input
-//               className="bg-gray-200 p-2 rounded-lg w-full hover:bg-gray-300 focus:bg-gray-300 focus:outline-none"
-//               type="text"
-//               id="firstname"
-//               name='firstname'
-//               value={existedUser?.firstname?.toUpperCase()}
-//               onChange={handleAlreadyExistedDetails}
+//             type="text"
+//             name="name"
+//             value={user.name}
+//             onChange={handleChange}
+//             className="w-full bg-gray-200 p-2 rounded-lg mt-1"
 //             />
-//           </div>
+//           ) : (
+//             <p className="bg-gray-100 p-2 rounded-lg mt-1">{user.name}</p>
+//           )}
+//         </label>
 
-//           <div className="w-full px-3">
-//             <label className="block font-medium text-lg mb-2" htmlFor="lastName">
-//               Last Name:
-//             </label>
+//         <label className="font-medium">
+//           Email:
+//           {editMode ? (
 //             <input
-//               className="bg-gray-200 p-2 rounded-lg w-full hover:bg-gray-300 focus:bg-gray-300 focus:outline-none"
-//               type="text"
-//               id="lastname"
-//               name='lastname'
-//               value={existedUser?.lastname?.toUpperCase()}
-//               onChange={handleAlreadyExistedDetails}
+//             type="email"
+//             name="email"
+//             value={user.email}
+//             onChange={handleChange}
+//             className="w-full bg-gray-200 p-2 rounded-lg mt-1"
 //             />
-//           </div>
-//         </div>
+//           ) : (
+//             <p className="bg-gray-100 p-2 rounded-lg mt-1">{user.email}</p>
+//           )}
+//         </label>
 
-//         <div className="flex flex-wrap -mx-3 mb-6">
-//           <div className="w-full px-3">
-//             <label className="block font-medium text-lg mb-2" htmlFor="email">
-//               Email:
-//             </label>
+//         <label className="font-medium">
+//           Phone Number:
+//           {editMode ? (
 //             <input
-//               className="bg-gray-200 p-2 rounded-lg w-full hover:bg-gray-300 focus:bg-gray-300 focus:outline-none"
-//               type="email"
-//               id="email"
-//               name='lastname'
-//               value={existedUser?.email}
-//               onChange={handleAlreadyExistedDetails}
+//             type="text"
+//             name="phoneNumber"
+//             value={user.phoneNumber}
+//             onChange={handleChange}
+//             className="w-full bg-gray-200 p-2 rounded-lg mt-1"
 //             />
-//           </div>
-//         </div>
-
-
-//         <label className="block font-medium text-lg mb-2">
-//           Address:
-//           <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:bg-white hover:bg-gray-100"
-//             type="text"
-//             id="address"
-//             name='address'
-//             value={existedUser?.userdetails?.address}
-//             onChange={handleAlreadyExistedDetails}
-//           />
+//           ) : (
+//             <p className="bg-gray-100 p-2 rounded-lg mt-1">{user.phoneNumber}</p>
+//           )}
 //         </label>
 
-
-
-//         <label className="block font-medium text-lg mb-2">
-//           City:
-//           <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:bg-white hover:bg-gray-100"
-//             type="text"
-//             id="city"
-//             name='city'
-//             value={existedUser?.userdetails?.city}
-//             onChange={handleAlreadyExistedDetails} />
+//         <label className="font-medium">
+//           Account Type:
+//           <p className="bg-gray-100 p-2 rounded-lg mt-1 text-gray-600">
+//             {user.accountType?.toUpperCase()}
+//           </p>
 //         </label>
 
-//         <label className="block font-medium text-lg mb-2">
-//           State:
-//           <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:bg-white hover:bg-gray-100" type="text"
-//             id="state"
-//             name='state'
-//             value={existedUser?.userdetails?.state}
-//             onChange={handleAlreadyExistedDetails} />
-//         </label>
-
-//         <label className="block font-medium text-lg mb-2">
-//           PIN Code:
-//           <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:bg-white hover:bg-gray-100"
-//             type="text"
-//             id="pin"
-//             name='pin'
-//             value={existedUser?.userdetails?.pin}
-//             onChange={handleAlreadyExistedDetails} />
-//         </label>
-
-//         <label className="block font-medium text-lg mb-2">
-//           Aadhar Card Number:
-//           <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:bg-white hover:bg-gray-100"
-//             type="text"
-//             id="adhaar"
-//             name='adhaar'
-//             value={existedUser?.userdetails?.adhaar}
-//             onChange={handleAlreadyExistedDetails} />
-//         </label>
-
-//         <label className="block font-medium text-lg mb-2">
-//           PAN Card Number:
-//           <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:bg-white hover:bg-gray-100"
-//             type="text"
-//             id="pan"
-//             name='pan'
-//             value={existedUser?.userdetails?.pan?.toUpperCase()}
-//             onChange={handleAlreadyExistedDetails} />
-//         </label>
-
-//         <label className="block font-medium text-lg mb-2">
-//           Gender:
-//           <div className="inline-block">
-//             <label className="mr-3">
-//               <input type="radio"
-//                 id='gender'
-//                 name='gender'
-//                 value='M'
-//                 checked={existedUser?.userdetails?.gender === 'M'}
-//                 onChange={handleAlreadyExistedDetails}
-//                 className="form-radio focus:outline-none focus:shadow-outline-indigo" />
-//               Male
-//             </label>
-//             <label className="mr-3">
-//               <input type="radio"
-//                 id='gender'
-//                 name='gender'
-//                 value='F'
-//                 checked={existedUser?.userdetails?.gender === 'F'}
-//                 onChange={handleAlreadyExistedDetails}
-//                 className="form-radio focus:outline-none focus:shadow-outline-indigo" />
-//               Female
-//             </label>
-//             <label className="mr-3">
-//               <input type="radio"
-//                 id='gender'
-//                 name='gender'
-//                 value='M'
-//                 checked={existedUser?.userdetails?.gender === 'O'}
-//                 onChange={handleAlreadyExistedDetails}
-//                 className="form-radio focus:outline-none focus:shadow-outline-indigo" />
-//               Others
-//             </label>
-//           </div>
-//         </label>
-
-//         <label className="block font-medium text-lg mb-2">
-//           Mobile Number:
-//           <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:shadow-outline-indigo" type="tel"
-//             //  pattern="[+][9][1][0-9]{10}"
-//             id="mobile"
-//             name='mobile'
-//             value={(existedUser?.userdetails?.mobile)}
-//             // onChange={(e) => setPhone(e.target.value.substring(3))}
-//             onChange={handleAlreadyExistedDetails}
-//           />
-//         </label>
-//         <br />
-
-//         <label className="block font-medium text-lg mb-2">
-//           Date of Birth:
-//           <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:shadow-outline-indigo" type="date"
-//             id='dateOfBirth'
-//             name='dateOfBirth'
-//             value={(existedUser?.userdetails?.dateOfBirth)}
-//             onChange={handleAlreadyExistedDetails} />
-//         </label>
-//         <br />
-
-//         {/* <div>
-//     <label className="block font-medium text-lg mb-2">
-//       Profile Picture:
-//       <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:shadow-outline-indigo" type="file" onChange={handleImageChange} accept="image/*" />
-//     </label>
-//     <br />
-//     {imagePreviewUrl && <img src={imagePreviewUrl} alt="Preview" className="w-16 h-16 rounded-full object-cover" />}
-//   </div> */}
-
-
-//         <div className=' flex flex-row justify-center items-center space-x-4'>
-
-
-
-//           <button type="submit" className="bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600">
-//             Create
+//         {!editMode ? (
+//           <button
+//           className="bg-indigo-600 text-white py-2 rounded-lg mt-4"
+//           onClick={handleEditToggle}
+//           >
+//             Update Profile
 //           </button>
+//         ) : (
+//           <button
+//           className="bg-green-600 text-white py-2 rounded-lg mt-4"
+//           onClick={handleSave}
+//           >
+//             Save
+//           </button>
+//         )}
 
-
-
-
-
-//         </div>
-
-
-
-
-
-//       </form>
-//       </>
-//     )
-
-
-//   }
-//   else {
-//     // .................................................else condition.......................................
-//     return (
-//       <>
-//       <nav className='navbar  flex flex-row justify-between mx-auto items-center h-[20vh] bg-gray-300 mx-auto px-[7rem]'>
-//       <div><h1 className='text-[1rem] font-semibold'>This Is Profile Section</h1></div>
-//             <div className='flex flex-row items-center justify-center space-x-4'>
-
-//               <button className=' hover:bg-slate-600 hover:text-[#f1f2f6] bg-[#f1f2f6] py-[1rem] px-[2.5rem] rounded-lg text-xl duration-[0.5s]transition-all font-semibold' onClick={handleSignOut}>Sign Out</button>
-            
-//           <NavLink to={"/change-password"} className="abc hover:bg-slate-600 hover:text-[#f1f2f6] bg-[#f1f2f6] py-[1rem] px-[2.5rem] rounded-lg text-xl duration-[0.5s]transition-all font-semibold">Change Password</NavLink >
-      
 //       </div>
-//   </nav>
-//   <Avatar/>
-//       <form onSubmit={handleUpdateProfile} className="bg-white p-6 rounded-lg flex flex-col">
-//         <div className="flex flex-wrap -mx-3 mb-6">
-//           <div className="w-full px-3">
-//             <label className="block font-medium text-lg mb-2" htmlFor="firstName">
-//               First Name:
-//             </label>
-//             <input
-//               className="bg-gray-200 p-2 rounded-lg w-full hover:bg-gray-300 focus:bg-gray-300 focus:outline-none"
-//               type="text"
-//               id="firstname"
-//               name='firstname'
-//               value={existedUser?.firstname?.toUpperCase()}
-//               onChange={handleAlreadyExistedDetails}
-//             />
-//           </div>
-
-//           <div className="w-full px-3">
-//             <label className="block font-medium text-lg mb-2" htmlFor="lastName">
-//               Last Name:
-//             </label>
-//             <input
-//               className="bg-gray-200 p-2 rounded-lg w-full hover:bg-gray-300 focus:bg-gray-300 focus:outline-none"
-//               type="text"
-//               id="lastname"
-//               name='lastname'
-//               value={existedUser?.lastname?.toUpperCase()}
-//               onChange={handleAlreadyExistedDetails}
-//             />
-//           </div>
 //         </div>
 
-//         <div className="flex flex-wrap -mx-3 mb-6">
-//           <div className="w-full px-3">
-//             <label className="block font-medium text-lg mb-2" htmlFor="email">
-//               Email:
-//             </label>
-//             <input
-//               className="bg-gray-200 p-2 rounded-lg w-full hover:bg-gray-300 focus:bg-gray-300 focus:outline-none"
-//               type="email"
-//               id="email"
-//               name='lastname'
-//               value={existedUser?.email}
-//               onChange={handleAlreadyExistedDetails}
-//             />
-//           </div>
-//         </div>
+//     </div>
+//   );
+// };
 
-
-//         <label className="block font-medium text-lg mb-2">
-//           Address:
-//           <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:bg-white hover:bg-gray-100"
-//             type="text"
-//             id="address"
-//             name='address'
-//             value={existedUser?.userdetails?.address}
-//             onChange={handleAlreadyExistedDetails}
-//           />
-//         </label>
-
-
-
-//         <label className="block font-medium text-lg mb-2">
-//           City:
-//           <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:bg-white hover:bg-gray-100"
-//             type="text"
-//             id="city"
-//             name='city'
-//             value={existedUser?.userdetails?.city}
-//             onChange={handleAlreadyExistedDetails} />
-//         </label>
-
-//         <label className="block font-medium text-lg mb-2">
-//           State:
-//           <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:bg-white hover:bg-gray-100" type="text"
-//             id="state"
-//             name='state'
-//             value={existedUser?.userdetails?.state}
-//             onChange={handleAlreadyExistedDetails} />
-//         </label>
-
-//         <label className="block font-medium text-lg mb-2">
-//           PIN Code:
-//           <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:bg-white hover:bg-gray-100"
-//             type="text"
-//             id="pin"
-//             name='pin'
-//             value={existedUser?.userdetails?.pin}
-//             onChange={handleAlreadyExistedDetails} />
-//         </label>
-
-//         <label className="block font-medium text-lg mb-2">
-//           Aadhar Card Number:
-//           <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:bg-white hover:bg-gray-100"
-//             type="text"
-//             id="adhaar"
-//             name='adhaar'
-//             value={existedUser?.userdetails?.adhaar}
-//             onChange={handleAlreadyExistedDetails} />
-//         </label>
-
-//         <label className="block font-medium text-lg mb-2">
-//           PAN Card Number:
-//           <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:bg-white hover:bg-gray-100"
-//             type="text"
-//             id="pan"
-//             name='pan'
-//             value={existedUser?.userdetails?.pan?.toUpperCase()}
-//             onChange={handleAlreadyExistedDetails} />
-//         </label>
-
-//         <label className="block font-medium text-lg mb-2">
-//           Gender:
-//           <div className="inline-block">
-//             <label className="mr-3">
-//               <input type="radio"
-//                 id='gender'
-//                 name='gender'
-//                 value='M'
-//                 checked={existedUser?.userdetails?.gender === 'M'}
-//                 onChange={handleAlreadyExistedDetails}
-//                 className="form-radio focus:outline-none focus:shadow-outline-indigo" />
-//               Male
-//             </label>
-//             <label className="mr-3">
-//               <input type="radio"
-//                 id='gender'
-//                 name='gender'
-//                 value='F'
-//                 checked={existedUser?.userdetails?.gender === 'F'}
-//                 onChange={handleAlreadyExistedDetails}
-//                 className="form-radio focus:outline-none focus:shadow-outline-indigo" />
-//               Female
-//             </label>
-//             <label className="mr-3">
-//               <input type="radio"
-//                 id='gender'
-//                 name='gender'
-//                 value='O'
-//                 checked={existedUser?.userdetails?.gender === 'O'}
-//                 onChange={handleAlreadyExistedDetails}
-//                 className="form-radio focus:outline-none focus:shadow-outline-indigo" />
-//               Others
-//             </label>
-//           </div>
-//         </label>
-
-//         <label className="block font-medium text-lg mb-2">
-//           Mobile Number:
-//           <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:shadow-outline-indigo" type="tel"
-//             //  pattern="[+][9][1][0-9]{10}"
-//             id="mobile"
-//             name='mobile'
-//             value={(existedUser?.userdetails?.mobile)}
-//             // onChange={(e) => setPhone(e.target.value.substring(3))}
-//             onChange={handleAlreadyExistedDetails}
-//           />
-//         </label>
-//         <br />
-
-//         <label className="block font-medium text-lg mb-2">
-//           Date of Birth:
-//           <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:shadow-outline-indigo" type="date"
-//             id='dateOfBirth'
-//             name='dateOfBirth'
-//             value={(existedUser?.userdetails?.dateOfBirth)}
-//             onChange={handleAlreadyExistedDetails} />
-//         </label>
-//         <br />
-
-//         {/* <div>
-//     <label className="block font-medium text-lg mb-2">
-//       Profile Picture:
-//       <input className="bg-gray-200 p-2 rounded-lg w-full focus:outline-none focus:shadow-outline-indigo" type="file" onChange={handleImageChange} accept="image/*" />
-//     </label>
-//     <br />
-//     {imagePreviewUrl && <img src={imagePreviewUrl} alt="Preview" className="w-16 h-16 rounded-full object-cover" />}
-//   </div> */}
-
-
-//         <div className=' flex flex-row justify-center items-center space-x-4'>
-
-
-
-//           <button className="bg-amber-600 text-white py-2 px-4 rounded-lg hover:bg-amber-700">
-//             Update
-//           </button>
-
-
-//         </div>
-
-//       </form>
-//       </>
-//     )
-//   }
+// export default Profile;
 
 
 
 
-
-
-
-
-
-
-
-// }
-
-// export default Profile
 
 
 
 
 import React, { useState, useEffect } from 'react';
+import axios from "axios";
 import { toast } from "react-hot-toast";
+import Navbar from '../LandingPage/Navbar';
+import AvatarCard from './AvatarCard';
 
 const Profile = () => {
 
   const [editMode, setEditMode] = useState(false);
 
   const [user, setUser] = useState({
+    id: "",
     name: "",
     email: "",
-    phoneNumber: "",
+    phone: "",
     accountType: ""
   });
 
+  // const accountNumber = "323456789";    
+  const accountNumber = sessionStorage.getItem("accountNo");
+     
+
   useEffect(() => {
-    setUser({
-      name: "Surya Noble",
-      email: "noble@example.com",
-      phoneNumber: "9876543210",
-      accountType: "savings"
-    });
+    const fetchAccountDetails = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8080/accounts/${accountNumber}`);
+
+        const data = res.data;
+
+        setUser({
+          id: data.user.id,
+          name: data.user.name,
+          email: data.user.email,
+          phone: data.user.phone,
+          accountType: data.accountType
+        });
+
+      } catch (err) {
+        toast.error("Failed to fetch profile");
+        console.error(err);
+      }
+    };
+
+    fetchAccountDetails();
   }, []);
 
+  // Handle field changes
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  const handleEditToggle = () => {
-    setEditMode(true);
-  };
 
-  const handleSave = () => {
-    if (!user.name || !user.email || !user.phoneNumber) {
-      toast.error("All fields required");
-      return;
+  // Toggle edit mode
+  const handleEditToggle = () => setEditMode(true);
+
+
+  // SAVE updated user → backend PUT request
+  const handleSave = async () => {
+    if (!user.name || !user.email || !user.phone) {
+      return toast.error("All fields are required");
     }
 
-    if (user.phoneNumber.length !== 10) {
-      toast.error("Enter valid 10 digit number");
-      return;
+    if (user.phone.length !== 10) {
+      return toast.error("Enter valid 10 digit number");
     }
 
-    toast.success("Profile Updated");
-    setEditMode(false);
+    const updatedUser = {
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      accountType:user.accountType
+
+    };
+
+    try {
+      const res = await axios.put(
+        `http://localhost:8080/users/${user.id}`,
+        updatedUser
+      );
+      console.log(res);
+      console.log("check here")
+
+      toast.success("Profile Updated Successfully");
+
+      setUser({
+        ...user,
+        name: res.data.name,
+        email: res.data.email,
+        phone: res.data.phone
+      });
+
+      setEditMode(false);
+
+    } catch (err) {
+      toast.error("Update failed");
+      console.error(err);
+    }
   };
+
 
   return (
-    <div className="p-6 max-w-xl mx-auto bg-white rounded-xl shadow-lg">
+    <div>
+      <Navbar />
+      <div className="p-6 mt-5 mb-4 max-w-xl mx-auto bg-white rounded-xl shadow-xl pt-8 relative">
 
-      <h1 className="text-2xl font-semibold mb-6 text-center">Profile</h1>
+        <h1 className="text-2xl font-semibold mb-6 text-center">Profile</h1>
 
-      <div className="flex flex-col space-y-4">
+        <AvatarCard name={user.name} email={user.email} />
 
-        <label className="font-medium">
-          Name:
-          {editMode ? (
-            <input
-              type="text"
-              name="name"
-              value={user.name}
-              onChange={handleChange}
-              className="w-full bg-gray-200 p-2 rounded-lg mt-1"
-            />
+        <div className="flex flex-col space-y-4">
+
+          {/* Name */}
+          <label className="font-medium">
+            Name:
+            {editMode ? (
+              <input
+                type="text"
+                name="name"
+                value={user.name}
+                onChange={handleChange}
+                className="w-full bg-gray-200 p-2 rounded-lg mt-1"
+              />
+            ) : (
+              <p className="bg-gray-100 p-2 rounded-lg mt-1">{user.name}</p>
+            )}
+          </label>
+
+          {/* Email */}
+          <label className="font-medium">
+            Email:
+            {editMode ? (
+              <input
+                type="email"
+                name="email"
+                value={user.email}
+                onChange={handleChange}
+                className="w-full bg-gray-200 p-2 rounded-lg mt-1"
+              />
+            ) : (
+              <p className="bg-gray-100 p-2 rounded-lg mt-1">{user.email}</p>
+            )}
+          </label>
+
+          {/* Phone */}
+          <label className="font-medium">
+            Phone Number:
+            {editMode ? (
+              <input
+                type="text"
+                name="phone"
+                value={user.phone}
+                onChange={handleChange}
+                className="w-full bg-gray-200 p-2 rounded-lg mt-1"
+              />
+            ) : (
+              <p className="bg-gray-100 p-2 rounded-lg mt-1">{user.phone}</p>
+            )}
+          </label>
+
+          {/* Account Type */}
+          <label className="font-medium">
+            Account Type:
+            <p className="bg-gray-100 p-2 rounded-lg mt-1 text-gray-600">
+              {user.accountType?.toUpperCase()}
+            </p>
+          </label>
+
+          {/* BUTTONS */}
+          {!editMode ? (
+            <button
+              className="bg-indigo-600 profile-hover-btn text-white py-2 rounded-lg mt-4"
+              onClick={handleEditToggle}
+            >
+              Update Profile
+            </button>
           ) : (
-            <p className="bg-gray-100 p-2 rounded-lg mt-1">{user.name}</p>
+            <button
+              className="bg-green-600 profile-hover-btn text-white py-2 rounded-lg mt-4"
+              onClick={handleSave}
+            >
+              Save
+            </button>
           )}
-        </label>
 
-        <label className="font-medium">
-          Email:
-          {editMode ? (
-            <input
-              type="email"
-              name="email"
-              value={user.email}
-              onChange={handleChange}
-              className="w-full bg-gray-200 p-2 rounded-lg mt-1"
-            />
-          ) : (
-            <p className="bg-gray-100 p-2 rounded-lg mt-1">{user.email}</p>
-          )}
-        </label>
-
-        <label className="font-medium">
-          Phone Number:
-          {editMode ? (
-            <input
-              type="text"
-              name="phoneNumber"
-              value={user.phoneNumber}
-              onChange={handleChange}
-              className="w-full bg-gray-200 p-2 rounded-lg mt-1"
-            />
-          ) : (
-            <p className="bg-gray-100 p-2 rounded-lg mt-1">{user.phoneNumber}</p>
-          )}
-        </label>
-
-        <label className="font-medium">
-          Account Type:
-          <p className="bg-gray-100 p-2 rounded-lg mt-1 text-gray-600">
-            {user.accountType.toUpperCase()}
-          </p>
-        </label>
-
-        {!editMode ? (
-          <button
-            className="bg-indigo-600 text-white py-2 rounded-lg mt-4"
-            onClick={handleEditToggle}
-          >
-            Update Profile
-          </button>
-        ) : (
-          <button
-            className="bg-green-600 text-white py-2 rounded-lg mt-4"
-            onClick={handleSave}
-          >
-            Save
-          </button>
-        )}
-
+        </div>
       </div>
-
     </div>
   );
 };

@@ -166,26 +166,63 @@ import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../Context/AuthContext";
+import { useEffect } from "react";
+import axios from "axios";
+
 
 const Login = () => {
   const navigateTo = useNavigate();
-  const [email, setEmail] = useState("");
+  const [accountNo, setAccountNo] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
 
   const TOKEN_EXPIRY_DURATION = 15 * 60 * 1000;
 
+
+
+const [pin, setPin] = useState(0);
+
+  useEffect(() => {
+    const fetchAccountDetails = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8080/accounts/${accountNo}`);
+
+        // const data = res.data;
+
+        setPin(res.data.pin);
+        console.log("anna ikkada dekho pin kosam");
+        console.log(res.data.pin);
+        console.log(pin);
+
+      } catch (err) {
+        // toast.error("Failed to fetch profile");
+        console.error(err);
+      }
+    };
+
+    fetchAccountDetails();
+  }, [accountNo]);
+
+
   const submitLogin = (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
+    if (!accountNo || !password) {
       toast.error("Enter email & password");
       return;
     }
 
+     if (parseInt(password) !== pin) {
+          toast.error("PIN is incorrect!");
+          return;
+        }
+
     const dummyToken = "sample_token_" + Date.now();
     sessionStorage.setItem("jwtToken", dummyToken);
-    sessionStorage.setItem("userId", "12345");
+sessionStorage.setItem("accountNo", accountNo);
+
+console.log("All keys:", sessionStorage);
+console.log("accountNo:", sessionStorage.getItem("accountNo"));
 
     login();
 
@@ -206,15 +243,15 @@ const Login = () => {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form onSubmit={submitLogin} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
+              <label htmlFor="accountNo" className="block text-sm font-medium text-gray-700">
+                Account Number
               </label>
               <div className="mt-1">
                 <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="accountNo"
+                  type="number"
+                  value={accountNo}
+                  onChange={(e) => setAccountNo(e.target.value)}
                   required
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
@@ -256,7 +293,7 @@ const Login = () => {
 
             <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+              className="w-full flex profile-hover-btn justify-center py-2 px-4 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
             >
               Log in
             </button>

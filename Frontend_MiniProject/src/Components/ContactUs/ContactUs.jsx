@@ -4,6 +4,7 @@ import {useNavigate} from "react-router-dom"
 import  {toast} from "react-hot-toast"
 import  {useBankingSystem} from '../Context/UserContext'
 import  SyncLoader from "react-spinners/SyncLoader"
+import Navbar from '../LandingPage/Navbar'
 
 
 
@@ -22,24 +23,15 @@ const ContactUs = () => {
     const handleSendMail = async (e) =>{
       e.preventDefault();
 
-      const data ={
-        email,
-        subject,
-        body
-      }
+      setEmail('');
+      setBody('');
+      setSubject('');
+      toast.success("Mail Sent Please Wait for the Reply!")
 
-      setIsLoading(true);
-      const resp = await axios.post(`${BASE_URL}/api/v1/user/mail`, data);
 
-      if (resp.status === 200) {
-          toast.success("Mail sent succefully!")
-          handleReset();
-          setIsLoading(false);
-          
-      } else{
-        toast.error("unknown Error Occured!")
-        setIsLoading(false);
-      }
+
+
+     
     }
 
 
@@ -51,6 +43,8 @@ const ContactUs = () => {
 
   return (
     <div>
+
+      <Navbar/>
 
 {isLoading ? (
         <div className='flex flex-row justify-center items-center  h-[100vh]'>
@@ -127,7 +121,7 @@ const ContactUs = () => {
       </div>
       <button
         type="submit"
-        className="py-3 px-5 text-sm font-medium text-center text-white rounded-lg bg-blue-700 sm:w-fit hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        className="py-3 px-5 text-sm profile-hover-btn font-medium text-center text-white rounded-lg bg-blue-700 sm:w-fit hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
         Send message
       </button>

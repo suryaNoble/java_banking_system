@@ -71,6 +71,9 @@ import banklogo from "../../assets/images/cblogo.png";
 import { FaUserCircle } from "react-icons/fa";
 import { useAuth } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { IoHomeOutline } from "react-icons/io5";
+
 
 const Navbar = () => {
   const { isLoggedIn, logout } = useAuth();
@@ -79,17 +82,17 @@ const Navbar = () => {
 
   return (
     <nav className="navbar flex flex-row justify-between items-center h-[15vh] bg-gray-300 mx-auto px-[7rem]">
-      <img src={banklogo} className="logo w-[6rem]" alt="yolobank" />
-
+     <Link to="/">
+  <img src={banklogo} className="logo w-[6rem] cursor-pointer" alt="Vedabank" />
+</Link>
       <div className="flex items-center gap-4">
 
-        <a
-          className="abc hover:bg-slate-300/[0.1] py-[0.2rem] px-[1.0rem] rounded-lg duration-500 font-semibold"
-          href="https://github.com/suryaNoble/java_mini_project.git"
-          target="_blank"
-        >
-          Github
-        </a>
+      <NavLink to="/">
+
+        <div>
+            <IoHomeOutline className="text-xl" />
+          </div>
+      </NavLink>
 
         <NavLink to="/contactUs">
           <div className="abc hover:bg-slate-300/[0.1] py-[0.2rem] px-[1.0rem] rounded-lg duration-500 font-semibold">
@@ -130,6 +133,17 @@ const Navbar = () => {
                   className="w-full profile-hover-btn text-left px-4 py-2 hover:bg-gray-200"
                 >
                   Transactions
+                </button>
+
+                <button
+                  onClick={() => {
+                    logout();
+                    navigate("/reset-pin");
+                    setOpen(false);
+                  }}
+                  className="w-full  reset-pin-btn text-left px-4 py-2  hover:bg-gray-200"
+                >
+                  Reset PIN
                 </button>
 
                 <button

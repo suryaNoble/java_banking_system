@@ -1,9 +1,11 @@
 import React from "react";
 import Anshul from "../../assets/images/Anshul.png";
+import Navbar from "../LandingPage/Navbar";
 
 const AboutUs = () => {
   return (
     <div className=" ">
+      <Navbar/>
       {/* Section -1 */}
       <section className="2xl:container 2xl:mx-auto lg:py-16  p-0 m-0  md:py-12 md:px-6 py-9">
         <div className=" section1  flex flex-col lg:flex-row justify-between gap-8">

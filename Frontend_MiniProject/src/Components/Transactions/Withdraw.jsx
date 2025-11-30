@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import { useAuth } from "../Context/AuthContext";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
+import Navbar from "../LandingPage/Navbar";
 
 
 const Withdraw = () => {
@@ -15,24 +16,67 @@ const Withdraw = () => {
   const { login } = useAuth();
 
   const TOKEN_EXPIRY_DURATION = 15 * 60 * 1000;
+  //  const accountNumber = 323456789;
+  const accountNumber = sessionStorage.getItem("accountNo");
 
-  const submitWithdraw = (e) => {
-    e.preventDefault();
 
-    if (!amount || !pin) {
-      toast.error("Enter amount and pin");
+  // const submitWithdraw = (e) => {
+  //   e.preventDefault();
+
+  //   if (!amount || !pin) {
+  //     toast.error("Enter amount and pin");
+  //     return;
+  //   }
+  //   console.log("Withdrawn amount:", amount);
+    
+  //   navigateTo("/");
+  //   toast.success("Login Successful!");
+  // };
+
+
+  const submitWithdraw = async (e) => {
+  e.preventDefault();
+
+  if (!amount || !pin) {
+    toast.error("Enter amount and pin");
+    return;
+  }
+
+  try {
+    // const accountNo = localStorage.getItem("accountNo"); 
+
+    const response = await fetch("http://localhost:8080/transaction/withdraw", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        accountNumber,
+        amount: parseFloat(amount),
+        pin
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.text();
+     toast.error("Error Occurred Try Again");
       return;
     }
-    console.log("Withdrawn amount:", amount);
-    
+
+    const data = await response.json();
+
+    toast.success("Withdraw Successful!");
+
     navigateTo("/");
-    toast.success("Login Successful!");
-  };
+  } catch (error) {
+    toast.error("Something went wrong");
+  }
+};
 
   
 
 
   return (
+    <div>
+      <Navbar/>
     <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="text-center font-bold text-2xl">Withdraw Money</div>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -50,7 +94,7 @@ const Withdraw = () => {
                   onChange={(e) => setAmount(e.target.value)}
                   required
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
+                  />
               </div>
             </div>
 
@@ -67,14 +111,14 @@ const Withdraw = () => {
       onChange={(e) => setPin(e.target.value)}
       required
       className="appearance-none block w-full px-3 py-2 pr-10 border border-gray-300 
-                 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 
-                 focus:border-indigo-500 sm:text-sm"
-    />
+      rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 
+      focus:border-indigo-500 sm:text-sm"
+      />
 
     <span
       className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
       onClick={() => setShowPin(!showPin)}
-    >
+      >
       {showPin ? <FaEye className="text-gray-500" /> : <FaRegEyeSlash className="text-gray-500" />}
     </span>
   </div>
@@ -85,7 +129,7 @@ const Withdraw = () => {
               <NavLink
                 to="/"
                 className="font-medium text-indigo-600 hover:text-indigo-500 text-sm"
-              >
+                >
                 Don't need Money? Go to Home
               </NavLink>
 
@@ -94,13 +138,14 @@ const Withdraw = () => {
 
             <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-            >
+              className="w-full profile-hover-btn flex justify-center py-2 px-4 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+              >
               Withdraw
             </button>
           </form>
         </div>
       </div>
+              </div>
     </div>
   );
 };
