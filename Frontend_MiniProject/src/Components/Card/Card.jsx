@@ -3,6 +3,10 @@ import { FaWifi } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
+import { getUserById } from "../../api/userApi";
+import { useEffect } from "react";
+import { getAccount,checkBalance } from "../../api/accountApi";
+import toast from "react-hot-toast";
 
 
 const Card = () => {
@@ -13,16 +17,59 @@ const Card = () => {
 
   const [pin, setPin] = useState("");
 
-  const handleOK = () => {
+  const  handleOK = async () => {
     if (screen === "enterPin") {
-      setScreen("showBalance");
+      
+      try {
+        if(pin.length==0){
+          alert("pin enter cheyyandi Sir!");
+          setPin("");
+          return
+        }
+    const data = await checkBalance(accountNumber, pin);
+    console.log("checking pin entered by user for balancec check");
+    console.log(pin);
+    console.log("Balance:", data);
+
+    setBalance(data);       // store balance returned from backend
+    setScreen("showBalance");
+    
+  } catch (err) {
+    toast.error("Invalid PIN");
+    setPin("");
+    console.log(err);
+  }
     } else {
       setScreen("normal");
       setPin("");
+      setBalance(null);
     }
   };
       const [showPin, setShowPin] = useState(false);
+
+
+
+  const [account, setAccount] = useState();
+  // const accountNumber = 323456789; // you will replace with logged-in user ID
+
+const token = sessionStorage.getItem("jwtToken");
+const accountNumber = sessionStorage.getItem("accountNo");
+
+console.log(accountNumber);
+console.log("here we have everything")
+
+
   
+  useEffect(() => {
+  getAccount(accountNumber).then(data => {
+    console.log("API Response:", data);
+    setAccount(data);
+  });
+}, [])
+
+
+const [balance, setBalance] = useState(null);
+
 
   return (
     <div className="w-full flex flex-col justify-center items-center py-10 gap-6">
@@ -40,9 +87,9 @@ const Card = () => {
             </div>
 
             <div className="absolute bottom-6 left-6">
-              <p className="text-xs tracking-wide font-semibold">M Surya Manikanta</p>
+              <p className="text-xs tracking-wide font-semibold">{account?.user?.name}</p>
               <p className="text-xs mt-1">06/28</p>
-              <p className="text-lg tracking-widest mt-2">1234 1234 1234 1234</p>
+              <p className="text-lg tracking-widest mt-2">{account?.accountNo}</p>
             </div>
 
             <div className="absolute bottom-6 right-6 flex gap-1 items-center">
@@ -61,6 +108,7 @@ const Card = () => {
   <input
     type={showPin ? "text" : "password"}
     value={pin}
+    
     onChange={(e) => setPin(e.target.value)}
     className="bg-white px-3 py-1 pr-10 rounded-md text-black text-center w-full"
   />
@@ -91,7 +139,10 @@ const Card = () => {
         {screen === "showBalance" && (
           <div className="flex flex-col justify-center items-center gap-3">
             <h2 className="text-xl font-semibold">Your Balance</h2>
-            <p className="text-3xl font-bold">₹ 25,430.00</p>
+            <p className="text-3xl font-bold">
+  ₹ {balance !== null ? balance.toLocaleString() : "Error,try Again"}
+</p>
+
 
             <button
               className="bg-white ok-btn text-black px-5 py-1 rounded-lg font-semibold"

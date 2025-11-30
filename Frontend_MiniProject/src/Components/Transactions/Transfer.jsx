@@ -5,6 +5,8 @@ import { useAuth } from "../Context/AuthContext";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 import { MdSendToMobile } from "react-icons/md";
+import Navbar from "../LandingPage/Navbar";
+
 
 const Transfer = () => {
   const navigateTo = useNavigate();
@@ -18,23 +20,71 @@ const Transfer = () => {
 
   const TOKEN_EXPIRY_DURATION = 15 * 60 * 1000;
 
-  const submitTransfer = (e) => {
-    e.preventDefault();
+  // const submitTransfer = (e) => {
+  //   e.preventDefault();
 
-    if (!amount || !pin) {
-      toast.error("Enter amount and pin");
+  //   if (!amount || !pin) {
+  //     toast.error("Enter amount and pin");
+  //     return;
+  //   }
+  //   console.log("transferred amount:", amount);
+    
+    
+  //   navigateTo("/");
+  // };
+
+    //  const fromAccountNo = 323456789;
+    const fromAccountNo = sessionStorage.getItem("accountNo");
+
+
+
+  const submitTransfer = async (e) => {
+  e.preventDefault();
+
+  if (!amount || !pin || !toAccount) {
+    toast.error("Please fill all fields");
+    return;
+  }
+
+  try {
+    // const fromAccountNo = localStorage.getItem("accountNo"); 
+
+    const response = await fetch("http://localhost:8080/transaction/transfer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fromAccountNumber:fromAccountNo,
+        toAccountNumber: toAccount,
+        amount: parseFloat(amount),
+        pin
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.text();
+      toast.error("Enter correct PIN");
+      console.log(err);
+      console.log("anna ikkada unna!")
       return;
     }
-    console.log("transferred amount:", amount);
-    
-    
+
+    const data = await response.json();
+    toast.success("Money transferred successfully!");
+
     navigateTo("/");
-  };
+
+  } catch (error) {
+    toast.error("Something went wrong");
+  }
+};
+
 
   
 
 
   return (
+    <div>
+      <Navbar/>
     <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="text-center font-bold text-2xl">Transfer Money</div>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -52,8 +102,8 @@ const Transfer = () => {
                   onChange={(e) => setToAccount(e.target.value)}
                   required
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                
-                />
+                  
+                  />
                 
               </div>
             </div>
@@ -69,7 +119,7 @@ const Transfer = () => {
                   onChange={(e) => setAmount(e.target.value)}
                   required
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
+                  />
               </div>
             </div>
 
@@ -86,14 +136,14 @@ const Transfer = () => {
       onChange={(e) => setPin(e.target.value)}
       required
       className="appearance-none block w-full px-3 py-2 pr-10 border border-gray-300 
-                 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 
-                 focus:border-indigo-500 sm:text-sm"
-    />
+      rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 
+      focus:border-indigo-500 sm:text-sm"
+      />
 
     <span
       className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
       onClick={() => setShowPin(!showPin)}
-    >
+      >
       {showPin ? <FaEye className="text-gray-500" /> : <FaRegEyeSlash className="text-gray-500" />}
     </span>
   </div>
@@ -104,7 +154,7 @@ const Transfer = () => {
               <NavLink
                 to="/"
                 className="font-medium text-indigo-600 hover:text-indigo-500 text-sm"
-              >
+                >
                 Don't Wanna Transfer? Go to Home
               </NavLink>
 
@@ -113,7 +163,7 @@ const Transfer = () => {
 
             <button
             type="submit"
-            className="w-full flex justify-center items-center gap-2 py-2 px-4 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+            className="w-full flex profile-hover-btn justify-center items-center gap-2 py-2 px-4 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
             >
             Send
             <MdSendToMobile className="text-lg" />
@@ -123,6 +173,7 @@ const Transfer = () => {
           </form>
         </div>
       </div>
+              </div>
     </div>
   );
 };

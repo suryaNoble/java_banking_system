@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { NavLink, useNavigate } from "react-router-dom"
 import SyncLoader from "react-spinners/SyncLoader"
+import axios from "axios";
+
 
 const UserBasicDetails = () => {
 
@@ -44,15 +46,30 @@ const UserBasicDetails = () => {
     setDetails({ ...details, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!validateForm()) return;
+  if (!validateForm()) return;
 
-    console.log("User Details Submitted:", details);
+  try {
+    const response = await axios.post("http://localhost:8080/users", {
+      name: details.name,
+      phone: details.phone,
+      email: details.email,
+      accountType: "savings"   // OR choose from dropdown
+    });
+
+    const savedUser = response.data;
+
+    // store userId for next page
+    localStorage.setItem("userId", savedUser.id);
+
     navigateTo("/signup/account-details");
-  };
 
+  } catch (error) {
+    console.error("User Creation Failed:", error);
+  }
+};
   return (
     <>
       {isLoading ? (
@@ -109,7 +126,7 @@ const UserBasicDetails = () => {
 
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                className="w-full profile-hover-btn flex justify-center py-2 px-4 rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
               >
                 Next
               </button>

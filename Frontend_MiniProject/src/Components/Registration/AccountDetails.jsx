@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { useNavigate } from "react-router-dom"
 import SyncLoader from "react-spinners/SyncLoader"
+  import axios from "axios";
+
 
 const AccountDetails = () => {
 
@@ -35,14 +37,42 @@ const AccountDetails = () => {
     setAccDetails({ ...accDetails, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
 
-    if (!validateForm()) return;
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    console.log("Account Details Submitted:", accDetails);
+  if (!validateForm()) return;
+
+  const userId = localStorage.getItem("userId");
+
+  if (!userId) {
+    alert("User not created. Please fill User Details first.");
+    return;
+  }
+
+  // Generate 10 digit account number
+  const accountNo = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+
+  try {
+    const response = await axios.post("http://localhost:8080/accounts", {
+      accountNo: accountNo,
+      pin: Number(accDetails.pin),
+      accountType: accDetails.accountType,
+      balance: 0,
+      user: {
+        id: Number(userId)
+      }
+    });
+
+    console.log("Account created:", response.data);
+
     navigateTo("/login");
-  };
+
+  } catch (error) {
+    console.error("Account Creation Failed:", error);
+  }
+};
+
 
   return (
     <>
@@ -91,7 +121,7 @@ const AccountDetails = () => {
 
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                className="w-full profile-hover-btn flex justify-center py-2 px-4 rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
               >
                 Create Account
               </button>

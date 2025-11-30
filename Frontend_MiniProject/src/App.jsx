@@ -11,6 +11,8 @@ import Deposit from "./Components/Transactions/Deposit";
 import Transfer from "./Components/Transactions/Transfer";
 import CheckBalance from "./Components/Transactions/CheckBalance";
 import TransactionsPage from "./Components/Transactions/TransactionsPage";
+import AccountDetails from "./Components/Registration/AccountDetails";
+import ResetPin from "./Components/ResetPin/ResetPin";
 
 function App() {
   return (
@@ -22,6 +24,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         {/* <Route path="/signup" element={<Register />} /> */}
         <Route path="/signup" element={<UserBasicDetails />} />
+        <Route path="/signup/account-details" element={<AccountDetails />} />
+
+
 
         <Route path="/profile" element={<Profile />} />
         <Route path="/about" element={<AboutUs />} />
@@ -33,6 +38,8 @@ function App() {
         <Route path="/transfer" element={<Transfer />} />
         <Route path="/check-balance" element={<CheckBalance />} />
         <Route path="/transactions" element={<TransactionsPage />} />
+
+        <Route path="/reset-pin" element={<ResetPin/>}/>
 
 
 

@@ -51,11 +51,21 @@ h1 {
 }
 
 .logout-btn:hover {
-  border-color: #00000031;
+  /* border-color: #00000031; */
+  border-color:rgb(214, 16, 16);
 }
 
 .ok-btn{
   background-color: #cadfec;
+}
+
+.reset-pin-btn{
+  background-color: gray; 
+  color: rgba(174, 231, 15, 0.822);
+}
+
+.reset-pin-btn:hover{
+  border-color: rgba(174, 231, 15, 0.822);
 }
 
 button {
